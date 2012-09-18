@@ -1,5 +1,5 @@
 source :rubygems
 
-gem 'couchbase', '~> 1.0.0'
-gem 'yajl-ruby', '~> 1.1.0'
-gem 'rev', '~> 0.3.2'
+gem 'couchbase', '~> 1.1'
+gem 'yajl-ruby', '~> 1.1'
+gem 'rev', '~> 0.3'

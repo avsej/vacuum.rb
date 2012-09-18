@@ -63,12 +63,11 @@ class Watcher < Rev::StatWatcher
       begin
         LOGGER.info("processing file #{filename}")
         document = Yajl::Parser.parse(contents)
-        if document['_id']
-          @database.set(document['_id'], document)
-          LOGGER.info("file #{filename} successfully stored")
-        else
-          LOGGER.error("missing '_id' key in #{filename}")
-        end
+        id = filename[%r{/([^/]*)\.json$}, 1]
+        @database.set(id, document)
+        LOGGER.info("The document #{id} successfully stored")
+      rescue Couchbase::Error::Base
+        LOGGER.error("cannot store the document: #{filename}")
       rescue Yajl::ParseError
         LOGGER.error("cannot parse JSON: #{filename}")
       end
@@ -109,7 +108,8 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-LOGGER = Logger.new(options[:verbose] ? STDOUT : File.open('/dev/null', 'w+') )
+LOGGER = Logger.new(STDERR)
+LOGGER.level = options[:verbose] ? Logger::INFO : Logger::ERROR
 
 watcher = Watcher.new(options)
 watcher.on_change
